@@ -27,7 +27,39 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3|unique:products',
+            'description' => 'nullable',
+            'price' => 'required|integer',
+            'stock' => 'required|integer',
+            'category' => 'required|in:food,drink,snack',
+            'image' => 'required|image|mimes:png,jpg,jpeg'
+        ]);
+
+        $filename = time().'.'. $request->image->extension();
+        $request->image->storeAs('public/products', $filename);
+        $product = \App\Models\Product::create([
+            'name'=> $request->name,
+            'description'=> $request->description,
+            'price'=> $request->price,
+            'stock' => $request->stock,
+            'category'=> $request->category,
+            'image' => $filename,
+            'is_favorite' => $request->is_favorite
+        ]);
+
+        if($product){
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Product Created',
+                'data'=> $product
+                ],201);
+        } else{
+            return response()->json([
+                'success'=> false,
+                    'message'=> 'Product Failed to Save',
+            ], 409);
+        }
     }
 
     /**

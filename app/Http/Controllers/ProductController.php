@@ -31,6 +31,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|min:3|unique:products',
+            'description' => 'nullable',
             'price' => 'required|integer',
             'stock' => 'required|integer',
             'category' => 'required|in:food,drink,snack',
